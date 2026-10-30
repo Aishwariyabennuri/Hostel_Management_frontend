@@ -40,7 +40,7 @@ export const HomeVisit = model("HomeVisit", new Schema({
   studentId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   reason: String, departureAt: Date, expectedReturnAt: Date, actualReturnAt: Date,
   status: { type: String, enum: ["pending","approved","rejected","returned","clarification"], default: "pending" },
-  photoPath: String, exceptionReason: String, reviewedBy: { type: Schema.Types.ObjectId, ref: "User" }
+  photoUrl: String, reviewedBy: { type: Schema.Types.ObjectId, ref: "User" }
 }, opts));
 export const Announcement = model("Announcement", new Schema({
   slot: { type: String, enum: ["morning","afternoon","evening"], required: true },

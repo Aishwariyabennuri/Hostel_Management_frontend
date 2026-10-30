@@ -14,6 +14,14 @@ import communityRoutes from "./routes/community.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const app = express();
+let databaseConnection;
+const connectDatabase = () => {
+  if (!databaseConnection) databaseConnection = mongoose.connect(process.env.MONGO_URI);
+  return databaseConnection;
+};
+app.use(async (_req, _res, next) => {
+  try { await connectDatabase(); next(); } catch (error) { next(error); }
+});
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || "http://localhost:5173" }));
 app.use(express.json({ limit: "1mb" }));
 app.use("/api", rateLimit({ windowMs: 15 * 60 * 1000, limit: 300 }));
@@ -29,6 +37,9 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ message: err.message || "Server error" });
 });
 const port = process.env.PORT || 5000;
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => app.listen(port, () => console.log(`API listening on ${port}`)))
-  .catch(err => { console.error("MongoDB connection failed:", err.message); process.exit(1); });
+if (process.env.VERCEL !== "1") {
+  connectDatabase()
+    .then(() => app.listen(port, () => console.log(`API listening on ${port}`)))
+    .catch(err => { console.error("MongoDB connection failed:", err.message); process.exit(1); });
+}
+export default app;

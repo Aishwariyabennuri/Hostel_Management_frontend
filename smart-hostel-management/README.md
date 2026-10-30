@@ -39,19 +39,20 @@ A React + Bootstrap 5 frontend with a Node.js/Express REST API and MongoDB. Stud
 3. Copy `server/.env.example` to `server/.env` and set `MONGO_URI` and a long random `JWT_SECRET`.
 4. Copy `client/.env.example` to `client/.env` if the API is not at `http://localhost:5000/api`; set `VITE_API_URL` accordingly.
 5. Configure `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` and the optional `SMTP_PORT`, `SMTP_SECURE` and `SMTP_FROM` values in `server/.env` to enable password-reset emails.
-6. Create the first administrator using the documented `server/.env.example` seed settings, then run:
+6. Configure `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` in `server/.env` for private home-visit photo storage.
+7. Create the first administrator using the documented `server/.env.example` seed settings, then run:
 
    ```bash
    npm run seed:admin --prefix server
    ```
 
-7. Start the frontend and backend from the project root:
+8. Start the frontend and backend from the project root:
 
    ```bash
    npm run dev
    ```
 
-8. Open `http://localhost:5173`.
+9. Open `http://localhost:5173`.
 
 New student accounts remain pending until an administrator/warden approves them. A student cannot assign their own role or allocate their own bed.
 
