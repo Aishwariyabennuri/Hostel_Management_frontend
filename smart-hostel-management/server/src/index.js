@@ -14,6 +14,7 @@ import { connectDatabase } from "./database.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const app = express();
+app.set("trust proxy", 1);
 app.use(async (_req, _res, next) => {
   try { await connectDatabase(); next(); } catch (error) { next(error); }
 });
