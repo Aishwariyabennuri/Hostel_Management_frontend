@@ -31,6 +31,7 @@ export function connectDatabase() {
   connectionPromise = mongoose.connect(uri, {
     serverSelectionTimeoutMS: 10000,
   }).then(connection => {
+    connectionPromise = undefined;
     console.info("[database] MongoDB connection established.");
     return connection;
   }).catch(error => {

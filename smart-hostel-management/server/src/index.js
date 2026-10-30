@@ -30,6 +30,12 @@ app.use("/api/community", communityRoutes);
 app.get("/api/health", (_req, res) => res.json({ status: "ok", service: "Smart Hostel API" }));
 app.use((err, _req, res, _next) => {
   if (err.code === "MONGO_URI_MISSING" || err.name === "MongoServerError" || err.name === "MongooseServerSelectionError") {
+    console.error("[api] Database request failed.", {
+      name: err.name,
+      code: err.code,
+      reason: String(err.reason?.message || err.message || "unknown error")
+        .replace(/mongodb(?:\+srv)?:\/\/[^ ]+/gi, "mongodb://[redacted]"),
+    });
     return res.status(503).json({ message: "Database unavailable. Check the server MongoDB configuration." });
   }
   console.error("[api] Request failed.", { name: err.name, code: err.code, message: err.message });
