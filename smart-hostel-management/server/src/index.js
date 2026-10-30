@@ -1,5 +1,4 @@
 import express from "express";
-import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
@@ -11,14 +10,10 @@ import requestRoutes from "./routes/requests.js";
 import contentRoutes from "./routes/content.js";
 import feeRoutes from "./routes/fees.js";
 import communityRoutes from "./routes/community.js";
+import { connectDatabase } from "./database.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const app = express();
-let databaseConnection;
-const connectDatabase = () => {
-  if (!databaseConnection) databaseConnection = mongoose.connect(process.env.MONGO_URI);
-  return databaseConnection;
-};
 app.use(async (_req, _res, next) => {
   try { await connectDatabase(); next(); } catch (error) { next(error); }
 });
@@ -33,13 +28,16 @@ app.use("/api/fees", feeRoutes);
 app.use("/api/community", communityRoutes);
 app.get("/api/health", (_req, res) => res.json({ status: "ok", service: "Smart Hostel API" }));
 app.use((err, _req, res, _next) => {
-  console.error(err);
+  if (err.code === "MONGO_URI_MISSING" || err.name === "MongoServerError" || err.name === "MongooseServerSelectionError") {
+    return res.status(503).json({ message: "Database unavailable. Check the server MongoDB configuration." });
+  }
+  console.error("[api] Request failed.", { name: err.name, code: err.code, message: err.message });
   res.status(err.status || 500).json({ message: err.message || "Server error" });
 });
 const port = process.env.PORT || 5000;
 if (process.env.VERCEL !== "1") {
   connectDatabase()
     .then(() => app.listen(port, () => console.log(`API listening on ${port}`)))
-    .catch(err => { console.error("MongoDB connection failed:", err.message); process.exit(1); });
+    .catch(() => process.exit(1));
 }
 export default app;
