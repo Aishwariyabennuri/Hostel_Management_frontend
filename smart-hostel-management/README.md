@@ -54,6 +54,17 @@ A React + Bootstrap 5 frontend with a Node.js/Express REST API and MongoDB. Stud
 
 9. Open `http://localhost:5173`.
 
+For Vercel, configure `MONGO_URI` with the complete MongoDB Atlas SRV connection string. The username and password must belong to an Atlas database user, not an Atlas website login. If the password contains reserved URI characters such as `@`, `:`, `/`, `?`, `#` or `%`, URL-encode them before placing the value in the URI. Also add the Vercel deployment IP range (`0.0.0.0/0`, or a restricted range suitable for your deployment) to Atlas Network Access.
+
+### Deploy frontend and backend to Vercel
+
+Create two Vercel projects from this repository:
+
+1. **Backend:** set the project root directory to `server`. Add `MONGO_URI`, `JWT_SECRET`, `CLIENT_ORIGIN`, `ADMIN_NAME`, `ADMIN_EMAIL` and `ADMIN_PASSWORD` as environment variables. Add the optional SMTP and Cloudinary variables when those services are configured.
+2. **Frontend:** set the project root directory to `client`. Add `VITE_API_URL` with the backend URL followed by `/api`, for example `https://your-backend.vercel.app/api`.
+3. Deploy the backend first, then set the frontend `VITE_API_URL` and `CLIENT_ORIGIN` to the final deployed URLs and redeploy the frontend.
+4. After the backend deploys, run `npm run seed:admin --prefix server` locally with the production `MONGO_URI`, or create the first administrator through the supported seed workflow before logging in.
+
 New student accounts remain pending until an administrator/warden approves them. A student cannot assign their own role or allocate their own bed.
 
 ## Security and implementation notes
